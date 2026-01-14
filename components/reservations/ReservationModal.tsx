@@ -39,7 +39,7 @@ export default function ReservationModal({
 }: Props) {
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg rounded-3xl bg-white border border-rose-200">
+      <DialogContent className="w-[95%] sm:w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-rose-200">
         <DialogHeader>
           <DialogTitle className="text-sm font-semibold text-rose-900">
             Reservation Details
@@ -55,19 +55,21 @@ export default function ReservationModal({
             {reservation.status}
           </span>
 
-          <Info label="Customer" value={reservation.customerName} />
-          <Info label="Guests" value={String(reservation.guests)} />
-          <Info label="Date" value={reservation.dateISO} />
-          <Info label="Time" value={reservation.time} />
-          <Info label="Table" value={reservation.table ?? "—"} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Info label="Customer" value={reservation.customerName} />
+            <Info label="Guests" value={String(reservation.guests)} />
+            <Info label="Date" value={reservation.dateISO} />
+            <Info label="Time" value={reservation.time} />
+            <Info label="Table" value={reservation.table ?? "—"} />
+          </div>
         </div>
 
-        <div className="flex justify-between pt-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-3 pt-4">
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {reservation.status === "PENDING" && (
               <Button
                 className="bg-[#FB7185] hover:bg-[#F43F5E]"
@@ -86,7 +88,10 @@ export default function ReservationModal({
             )}
             {reservation.status !== "CANCELLED" &&
               reservation.status !== "SEATED" && (
-                <Button variant="outline" onClick={() => onCancel(reservation.id)}>
+                <Button
+                  variant="outline"
+                  onClick={() => onCancel(reservation.id)}
+                >
                   Cancel
                 </Button>
               )}

@@ -13,12 +13,12 @@ export default function ReservationsToolbar({
   onStatusChange,
 }: Props) {
   return (
-    <div className="bg-white border border-rose-200 rounded-2xl p-4 flex gap-2">
+    <div className="bg-white border border-rose-200 rounded-2xl p-4 flex flex-wrap gap-2">
       {["ALL", "PENDING", "CONFIRMED", "SEATED", "CANCELLED"].map((s) => (
         <button
           key={s}
           onClick={() => onStatusChange(s as any)}
-          className={`px-4 py-2 rounded-full text-sm font-semibold ${
+          className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap ${
             status === s
               ? "bg-[#FB7185] text-white"
               : "bg-rose-50 text-rose-800 hover:bg-rose-100"

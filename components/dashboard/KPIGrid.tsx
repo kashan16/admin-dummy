@@ -59,7 +59,7 @@ export function KPIGrid({ data }: Props) {
             </div>
 
             <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-border flex items-center justify-center shrink-0">
-              <Icon className="h-5 w-5 text-indigo-700" />
+              <Icon className="h-5 w-5 text-rose-500" />
             </div>
           </div>
         );
