@@ -10,7 +10,7 @@ export function Topbar() {
     useOutlet();
 
   return (
-    <header className="fixed top-0 z-40 w-full md:w-[calc(100%-16rem)] md:ml-64 h-16 bg-blue-700 text-white">
+    <header className="sticky top-0 z-40 h-16 bg-blue-700 text-white">
       <div className="h-full flex items-center justify-between px-4 sm:px-6">
         {/* Left */}
         <div className="flex items-center gap-4">
@@ -19,7 +19,6 @@ export function Topbar() {
 
         {/* Right */}
         <div className="flex items-center gap-4">
-          {/* Outlet Switch */}
           {isMultiOutlet && (
             <div className="relative">
               <select
@@ -42,7 +41,6 @@ export function Topbar() {
           <div className="hidden sm:flex items-center gap-2">
             <span className="text-sm font-semibold">Admin</span>
             <Avatar className="h-9 w-9 border border-white/15">
-              {/* Optional image */}
               <AvatarImage src="" alt="Admin" />
               <AvatarFallback className="bg-white/20 text-white">
                 AD
@@ -50,7 +48,6 @@ export function Topbar() {
             </Avatar>
           </div>
 
-          {/* Mobile Avatar (if name hidden) */}
           <div className="sm:hidden">
             <Avatar className="h-9 w-9 border border-white/15">
               <AvatarImage src="" alt="Admin" />

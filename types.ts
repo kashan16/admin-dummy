@@ -6,6 +6,16 @@ export interface Outlet {
 export type OutletScope = 'ALL' | string; // 'ALL' or Outlet.id
 export type OutletKey = "all" | "downtown" | "uptown" | "suburban";
 
+export type OrderType = 'DINE_IN' | 'PACK' | 'ORDER';
+
+export type OrderStatus =
+    | 'pending'
+    | 'accepted'
+    | 'preparing'
+    | 'ready'
+    | 'delivered'
+    | 'cancelled';
+
 export interface KPI {
     label: string;
     value: number | string;
@@ -13,7 +23,6 @@ export interface KPI {
     trendValue?: string;
 }
 
-export type OrderStatus = | "new" | "preparing" | "ready" | "completed";
 
 export interface OrderItem {
     name: string;
@@ -26,6 +35,7 @@ export interface Order {
     outlet: string;
     table: string;
     customer: string;
+    type: OrderType;
     status: OrderStatus;
     items: OrderItem[];
     createdAt: string;

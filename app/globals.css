@@ -123,3 +123,42 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #bill-print,
+  #bill-print * {
+    visibility: visible !important;
+  }
+
+  #bill-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm; /* change to 58mm if needed */
+    padding: 4mm;
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px dashed #000;
+    margin: 6px 0;
+  }
+}
+
+/* Hide scrollbar but keep scroll */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;            /* Chrome, Safari */
+}
+
