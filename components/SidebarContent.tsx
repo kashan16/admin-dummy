@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  BarChart3,
   Calendar,
   LayoutDashboard,
   ShoppingCart,
@@ -15,7 +14,6 @@ const nav = [
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/admin/reservations', label: 'Reservations', icon: Calendar },
   { href: '/admin/customers', label: 'Customers', icon: Users },
-  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
 ];
 
 export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
