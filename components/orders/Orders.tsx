@@ -5,12 +5,8 @@ import type { Order, OrderStatus, OrderType, OutletScope } from "@/types";
 import { useMemo, useState } from "react";
 import { OrderModal } from "./OrderModal";
 import { OrdersGrid } from "./OrdersGrid";
-// Assuming you have lucide-react installed, otherwise replace with SVGs
 import { ChevronDown, ListFilter, X } from "lucide-react";
 
-/* -----------------------------------------
- * FILTER OPTIONS
- * ----------------------------------------*/
 const STATUS_OPTIONS: Array<{ label: string; value: "all" | OrderStatus }> = [
   { label: "All", value: "all" },
   { label: "Pending", value: "pending" },
@@ -25,33 +21,20 @@ const TYPE_OPTIONS: Array<{ label: string; value: "all" | OrderType }> = [
   { label: "Delivery", value: "ORDER" },
 ];
 
-const TYPE_TINT: Record<OrderType, string> = {
-  DINE_IN: "bg-red-50 text-red-700 border-red-200 ring-red-500/20",
-  PACK: "bg-orange-50 text-orange-700 border-orange-200 ring-orange-500/20",
-  ORDER: "bg-emerald-50 text-emerald-700 border-emerald-200 ring-emerald-500/20",
-};
-
-const STATUS_TINT: Record<OrderStatus, string> = {
-  pending: "bg-slate-50 text-slate-700 border-slate-200 ring-slate-500/20",
-  delivered: "bg-emerald-100 text-emerald-700 border-emerald-200 ring-emerald-500/20",
-  cancelled: "bg-rose-50 text-rose-700 border-rose-200 ring-rose-500/20",
-};
-
-type OrderWithOutletName = Order & { outletName: string };
-
 export default function Orders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const [outlet, setOutlet] = useState<OutletScope>("ALL");
   const [type, setType] = useState<"all" | OrderType>("all");
   const [status, setStatus] = useState<"all" | OrderStatus>("all");
 
-  const outletNameById = useMemo(() => {
-    return Object.fromEntries(MOCK_OUTLETS.map((o) => [o.id, o.name]));
-  }, []);
+  const outletNameById = useMemo(
+    () => Object.fromEntries(MOCK_OUTLETS.map((o) => [o.id, o.name])),
+    []
+  );
 
-  const filtered: OrderWithOutletName[] = useMemo(() => {
+  const filtered = useMemo(() => {
     return mockOrders
       .filter((o) => {
         if (outlet !== "ALL" && o.outlet !== outlet) return false;
@@ -65,123 +48,104 @@ export default function Orders() {
       }));
   }, [outlet, type, status, outletNameById]);
 
-  const counts = useMemo(() => {
-    const base = { pending: 0, accepted: 0, preparing: 0, ready: 0, delivered: 0, cancelled: 0 };
-    for (const o of filtered) { base[o.status] += 1; }
-    return base;
-  }, [filtered]);
-
   const activeFilterCount = [
     outlet !== "ALL",
     type !== "all",
-    status !== "all"
+    status !== "all",
   ].filter(Boolean).length;
 
-  const clearFilters = () => {
-    setOutlet("ALL");
-    setType("all");
-    setStatus("all");
-  };
-
-  const getPillClass = (isActive: boolean, val: string) => {
-    const base = "px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 whitespace-nowrap";
-    if (!isActive) return `${base} bg-transparent border-transparent text-gray-400 hover:bg-gray-100 hover:text-gray-600`;
-    if (val === "all" || val === "ALL") return `${base} bg-gray-900 text-white border-gray-900 shadow-sm`;
-    const tint = STATUS_TINT[val as OrderStatus] || TYPE_TINT[val as OrderType] || "bg-gray-100 border-gray-200 text-gray-700";
-    return `${base} ${tint} shadow-sm ring-2`;
-  };
-
   return (
-    <div className="space-y-6 max-w-350 mx-auto p-6">
+    <div className="space-y-4 px-3 sm:px-6 lg:px-10 xl:px-14 max-w-screen-2xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Orders</h1>
-          <p className="text-sm text-gray-500">Real-time order management</p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+            Orders
+          </h1>
+          <p className="text-sm text-gray-500">
+            Real-time order management
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Toggle Button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
-              showFilters || activeFilterCount > 0 
-                ? "bg-white border-gray-900 text-gray-900 shadow-sm" 
-                : "bg-white border-gray-200 text-gray-500 hover:border-gray-300"
-            }`}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border"
           >
             <ListFilter className="w-4 h-4" />
             <span className="text-sm font-semibold">Filters</span>
             {activeFilterCount > 0 && (
-              <span className="flex items-center justify-center w-5 h-5 text-[10px] bg-gray-900 text-white rounded-full">
+              <span className="w-5 h-5 text-[10px] rounded-full flex items-center justify-center">
                 {activeFilterCount}
               </span>
             )}
-            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                showFilters ? "rotate-180" : ""
+              }`}
+            />
           </button>
-
-          <div className="h-8 w-px bg-gray-200 mx-1" />
-
-          <div className="px-3 py-2 bg-gray-50 rounded-xl text-xs font-bold text-gray-600 border border-gray-100">
-            {filtered.length} Orders
-          </div>
         </div>
       </div>
 
-      {/* Collapsible Filter Section */}
-      <div 
-        className={`grid transition-all duration-300 ease-in-out ${
-          showFilters ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 overflow-hidden"
+      {/* Filters */}
+      <div
+        className={`transition-all duration-300 ${
+          showFilters
+            ? "max-h-250 opacity-100"
+            : "max-h-0 opacity-0 overflow-hidden"
         }`}
       >
-        <div className="overflow-hidden">
-          <div className="p-6 bg-gray-50/50 border border-gray-100 rounded-2xl space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-gray-900">Refine Results</h3>
-              {activeFilterCount > 0 && (
-                <button onClick={clearFilters} className="text-xs font-bold text-rose-600 flex items-center gap-1 hover:opacity-80">
-                  <X className="w-3 h-3" /> Reset All
-                </button>
-              )}
+        <div className="p-4 sm:p-6 rounded-2xl space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-bold">Refine Results</h3>
+            {activeFilterCount > 0 && (
+              <button
+                onClick={() => {
+                  setOutlet("ALL");
+                  setType("all");
+                  setStatus("all");
+                }}
+                className="text-xs font-bold flex items-center gap-1"
+              >
+                <X className="w-3 h-3" /> Reset
+              </button>
+            )}
+          </div>
+
+          <div className="grid gap-6">
+            <div>
+              <p className="text-xs font-bold mb-2">Outlet</p>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => setOutlet("ALL")}>All</button>
+                {MOCK_OUTLETS.map((o) => (
+                  <button key={o.id} onClick={() => setOutlet(o.id)}>
+                    {o.name}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="grid gap-6">
-              {/* Outlet */}
-              <div className="space-y-2">
-                <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-gray-400">Select Outlet</span>
-                <div className="flex flex-wrap gap-1.5">
-                  <button onClick={() => setOutlet("ALL")} className={getPillClass(outlet === "ALL", "ALL")}>All Outlets</button>
-                  {MOCK_OUTLETS.map((o) => (
-                    <button key={o.id} onClick={() => setOutlet(o.id)} className={getPillClass(outlet === o.id, "neutral")}>
-                      {o.name}
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div>
+                <p className="text-xs font-bold mb-2">Type</p>
+                <div className="flex flex-wrap gap-2">
+                  {TYPE_OPTIONS.map((t) => (
+                    <button key={t.value} onClick={() => setType(t.value)}>
+                      {t.label}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8">
-                {/* Type */}
-                <div className="space-y-2">
-                  <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-gray-400">Service Type</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {TYPE_OPTIONS.map((opt) => (
-                      <button key={opt.value} onClick={() => setType(opt.value)} className={getPillClass(type === opt.value, opt.value)}>
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Status */}
-                <div className="space-y-2">
-                  <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-gray-400">Order Status</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {STATUS_OPTIONS.map((opt) => (
-                      <button key={opt.value} onClick={() => setStatus(opt.value)} className={getPillClass(status === opt.value, opt.value)}>
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+              <div>
+                <p className="text-xs font-bold mb-2">Status</p>
+                <div className="flex flex-wrap gap-2">
+                  {STATUS_OPTIONS.map((s) => (
+                    <button key={s.value} onClick={() => setStatus(s.value)}>
+                      {s.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -189,13 +153,13 @@ export default function Orders() {
         </div>
       </div>
 
-      {/* Main Grid */}
-      <div className="pt-2">
-        <OrdersGrid orders={filtered} onSelect={setSelectedOrder} />
-      </div>
+      <OrdersGrid orders={filtered} onSelect={setSelectedOrder} />
 
       {selectedOrder && (
-        <OrderModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+        <OrderModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
       )}
     </div>
   );

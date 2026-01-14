@@ -66,7 +66,7 @@ export default function CreateReservationModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg w-[92%] rounded-3xl bg-white border border-rose-200 shadow-xl p-0">
+      <DialogContent className="w-[95%] sm:w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-rose-200 shadow-xl p-0">
         <DialogHeader className="p-5 border-b border-rose-200">
           <DialogTitle className="text-sm font-semibold text-rose-900">
             Add Reservation
@@ -85,7 +85,7 @@ export default function CreateReservationModal({
             <Input value={phone} onChange={setPhone} />
           </Field>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Guests" required>
               <Input
                 type="number"
@@ -99,7 +99,7 @@ export default function CreateReservationModal({
             </Field>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Date" required>
               <Input type="date" value={dateISO} onChange={setDateISO} />
             </Field>
@@ -143,7 +143,7 @@ export default function CreateReservationModal({
           </Field>
         </div>
 
-        <div className="p-5 border-t border-rose-200 flex justify-between">
+        <div className="p-5 border-t border-rose-200 flex flex-col sm:flex-row gap-3 sm:justify-between">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
