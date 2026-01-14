@@ -55,4 +55,3 @@ export type Reservation = {
     status: ReservationStatus;
     createdAtISO: string;
 };
-

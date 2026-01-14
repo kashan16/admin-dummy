@@ -1,12 +1,11 @@
 'use client';
 
 import {
-    BarChart3,
-    Calendar,
-    LayoutDashboard,
-    Settings,
-    ShoppingCart,
-    Users,
+  BarChart3,
+  Calendar,
+  LayoutDashboard,
+  ShoppingCart,
+  Users
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -17,7 +16,6 @@ const nav = [
   { href: '/admin/reservations', label: 'Reservations', icon: Calendar },
   { href: '/admin/customers', label: 'Customers', icon: Users },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 
 export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
