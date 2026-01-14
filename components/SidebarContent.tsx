@@ -4,7 +4,7 @@ import {
   Calendar,
   LayoutDashboard,
   ShoppingCart,
-  Users
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -34,11 +34,16 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             className={[
               'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
               active
-                ? 'bg-blue-700 text-white shadow-sm'
-                : 'text-white/80 hover:bg-white/10 hover:text-white',
+                ? 'bg-[#FB7185] text-white shadow-sm'
+                : 'text-rose-900/80 hover:bg-rose-200/60 hover:text-rose-900',
             ].join(' ')}
           >
-            <item.icon className="h-4 w-4 shrink-0 opacity-90" />
+            <item.icon
+              className={[
+                'h-4 w-4 shrink-0',
+                active ? 'text-white' : 'text-rose-700',
+              ].join(' ')}
+            />
             <span className="truncate">{item.label}</span>
           </Link>
         );

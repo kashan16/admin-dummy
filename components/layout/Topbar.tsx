@@ -10,7 +10,7 @@ export function Topbar() {
     useOutlet();
 
   return (
-    <header className="sticky top-0 z-40 h-16 bg-blue-700 text-white">
+    <header className="sticky top-0 z-40 h-16 bg-[#FFF1F2] border-b border-rose-200 text-[#7F1D1D]">
       <div className="h-full flex items-center justify-between px-4 sm:px-6">
         {/* Left */}
         <div className="flex items-center gap-4">
@@ -19,39 +19,21 @@ export function Topbar() {
 
         {/* Right */}
         <div className="flex items-center gap-4">
-          {isMultiOutlet && (
-            <div className="relative">
-              <select
-                value={selectedOutlet}
-                onChange={(e) => setSelectedOutlet(e.target.value)}
-                className="appearance-none rounded-xl bg-white/15 px-4 py-2 pr-10 text-sm outline-none border border-white/10 hover:bg-white/20 transition-all duration-200 max-w-42.5 truncate"
-              >
-                <option value="ALL">All Outlets</option>
-                {outlets.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 opacity-70 pointer-events-none" />
-            </div>
-          )}
-
           {/* Profile */}
           <div className="hidden sm:flex items-center gap-2">
             <span className="text-sm font-semibold">Admin</span>
-            <Avatar className="h-9 w-9 border border-white/15">
+            <Avatar className="h-9 w-9 border border-rose-300">
               <AvatarImage src="" alt="Admin" />
-              <AvatarFallback className="bg-white/20 text-white">
+              <AvatarFallback className="bg-rose-200 text-rose-900">
                 AD
               </AvatarFallback>
             </Avatar>
           </div>
 
           <div className="sm:hidden">
-            <Avatar className="h-9 w-9 border border-white/15">
+            <Avatar className="h-9 w-9 border border-rose-300">
               <AvatarImage src="" alt="Admin" />
-              <AvatarFallback className="bg-white/20 text-white">
+              <AvatarFallback className="bg-rose-200 text-rose-900">
                 AD
               </AvatarFallback>
             </Avatar>

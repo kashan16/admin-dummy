@@ -58,7 +58,7 @@ function ActionButtons({
     <div className="flex flex-wrap gap-2 justify-end">
       {r.status === "PENDING" && (
         <Button
-          className="rounded-xl bg-blue-700 hover:bg-blue-800"
+          className="rounded-xl bg-rose-100 text-rose-800 border-rose-200"
           size="sm"
           onClick={() => onConfirm(r.id)}
         >
@@ -68,7 +68,7 @@ function ActionButtons({
 
       {r.status === "CONFIRMED" && (
         <Button
-          className="rounded-xl bg-blue-700 hover:bg-blue-800"
+          className="rounded-xl bg-[#FB7185] hover:bg-[#F43F5E]"
           size="sm"
           onClick={() => onSeat(r.id)}
         >

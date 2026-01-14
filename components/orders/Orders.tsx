@@ -14,9 +14,6 @@ import { ChevronDown, ListFilter, X } from "lucide-react";
 const STATUS_OPTIONS: Array<{ label: string; value: "all" | OrderStatus }> = [
   { label: "All", value: "all" },
   { label: "Pending", value: "pending" },
-  { label: "Accepted", value: "accepted" },
-  { label: "Preparing", value: "preparing" },
-  { label: "Ready", value: "ready" },
   { label: "Delivered", value: "delivered" },
   { label: "Cancelled", value: "cancelled" },
 ];
@@ -35,11 +32,8 @@ const TYPE_TINT: Record<OrderType, string> = {
 };
 
 const STATUS_TINT: Record<OrderStatus, string> = {
-  pending: "bg-orange-50 text-orange-700 border-orange-200 ring-orange-500/20",
-  accepted: "bg-blue-50 text-blue-700 border-blue-200 ring-blue-500/20",
-  preparing: "bg-purple-50 text-purple-700 border-purple-200 ring-purple-500/20",
-  ready: "bg-emerald-50 text-emerald-700 border-emerald-200 ring-emerald-500/20",
-  delivered: "bg-slate-100 text-slate-700 border-slate-200 ring-slate-500/20",
+  pending: "bg-slate-50 text-slate-700 border-slate-200 ring-slate-500/20",
+  delivered: "bg-emerald-100 text-emerald-700 border-emerald-200 ring-emerald-500/20",
   cancelled: "bg-rose-50 text-rose-700 border-rose-200 ring-rose-500/20",
 };
 
@@ -185,9 +179,6 @@ export default function Orders() {
                     {STATUS_OPTIONS.map((opt) => (
                       <button key={opt.value} onClick={() => setStatus(opt.value)} className={getPillClass(status === opt.value, opt.value)}>
                         {opt.label}
-                        {opt.value !== 'all' && (
-                          <span className="ml-1.5 opacity-50 font-normal">{counts[opt.value as OrderStatus]}</span>
-                        )}
                       </button>
                     ))}
                   </div>

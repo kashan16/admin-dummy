@@ -12,16 +12,19 @@ export function MobileSidebar() {
           className="
             md:hidden
             p-2 rounded-xl
-            hover:bg-white/15
+            hover:bg-rose-200/60
             transition-all duration-200
           "
         >
-          <Menu className="h-5 w-5 text-white" />
+          <Menu className="h-5 w-5 text-rose-700" />
         </button>
       </SheetTrigger>
 
-      <SheetContent side="left" className="w-64 p-0 bg-black text-white border-none">
-        <div className="h-16 flex items-center px-6 font-bold text-lg border-b border-white/10">
+      <SheetContent
+        side="left"
+        className="w-64 p-0 bg-[#FFF1F2] text-[#7F1D1D] border-none"
+      >
+        <div className="h-16 flex items-center px-6 font-bold text-lg border-b border-rose-200">
           LOGO
         </div>
 
@@ -32,7 +35,8 @@ export function MobileSidebar() {
         <div className="p-4">
           <button
             className="
-              w-full bg-blue-700 hover:bg-blue-800
+              w-full bg-[#FB7185] hover:bg-[#F43F5E]
+              text-white
               transition-all duration-200
               rounded-xl py-3 font-semibold
             "

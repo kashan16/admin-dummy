@@ -16,179 +16,100 @@ export default function CustomersTable({
   formatDate,
   formatINR,
 }: Props) {
-  if (customers.length === 0) {
+  if (!customers.length) {
     return (
-      <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-10 text-center">
-        <p className="text-sm font-semibold text-gray-900">No customers found</p>
-        <p className="text-xs text-gray-500 mt-1">
-          Try switching filters to view other customers.
+      <div className="bg-white border border-rose-200 rounded-2xl p-10 text-center">
+        <p className="text-sm font-semibold text-rose-900">
+          No customers found
+        </p>
+        <p className="text-xs text-rose-600 mt-1">
+          Try changing filters.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
-      {/* Header (same as reservations style) */}
-      <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between gap-3">
+    <div className="bg-white border border-rose-200 rounded-2xl overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-rose-200 flex justify-between">
         <div>
-          <p className="text-sm font-semibold text-gray-900">Repeat Customers</p>
-          <p className="text-xs text-gray-500 mt-1">
-            Tap a customer to view full details.
+          <p className="text-sm font-semibold text-rose-900">
+            Repeat Customers
+          </p>
+          <p className="text-xs text-rose-600 mt-1">
+            Tap a customer to view details.
           </p>
         </div>
-
-        <div className="text-xs text-gray-500">
+        <p className="text-xs text-rose-600">
           Showing{" "}
-          <span className="font-semibold text-gray-900">{customers.length}</span>
-        </div>
+          <span className="font-semibold text-rose-900">
+            {customers.length}
+          </span>
+        </p>
       </div>
 
-      {/* ✅ MOBILE VIEW (Cards) */}
-      <div className="block md:hidden p-4 space-y-3">
+      {/* Mobile cards */}
+      <div className="md:hidden p-4 space-y-3">
         {customers.map((c) => {
-          const outletNames = getOutletNames(c.outletIds);
-
+          const outlets = getOutletNames(c.outletIds);
           return (
             <div
               key={c.id}
               onClick={() => onRowClick(c)}
-              className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition cursor-pointer"
+              className="rounded-2xl border border-rose-200 bg-white p-4 shadow-sm hover:shadow-md transition cursor-pointer"
             >
-              {/* top row */}
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900 truncate">{c.name}</p>
-                  <p className="text-xs text-gray-500 truncate">{c.id}</p>
-                </div>
+              <p className="font-semibold text-rose-900">{c.name}</p>
+              <p className="text-xs text-rose-600">{c.id}</p>
 
-                <div className="shrink-0 text-right">
-                  <p className="text-xs text-gray-500">Total Spent</p>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {formatINR(c.totalSpent)}
-                  </p>
-                </div>
-              </div>
-
-              {/* info grid (same as reservations tiles style) */}
               <div className="mt-3 grid grid-cols-2 gap-3">
-                <InfoTile label="Orders" value={String(c.totalOrders)} />
-                <InfoTile label="Avg Order" value={formatINR(c.avgOrderValue)} />
-                <InfoTile label="Last Order" value={formatDate(c.lastOrderAtISO)} />
-                <InfoTile
-                  label="Outlets"
-                  value={`${outletNames.length} outlet${
-                    outletNames.length > 1 ? "s" : ""
-                  }`}
-                />
-              </div>
-
-              {/* outlets chips */}
-              <div className="mt-4 pt-3 border-t border-gray-200">
-                <p className="text-[11px] font-medium text-gray-500 mb-2">
-                  Outlet Visits
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {outletNames.slice(0, 3).map((name) => (
-                    <span
-                      key={name}
-                      className="px-2 py-1 rounded-full bg-gray-50 text-xs text-gray-700 border border-gray-200"
-                    >
-                      {name}
-                    </span>
-                  ))}
-
-                  {outletNames.length > 3 && (
-                    <span className="px-2 py-1 rounded-full bg-gray-100 text-xs text-gray-500 border border-gray-200">
-                      +{outletNames.length - 3}
-                    </span>
-                  )}
-                </div>
+                <Tile label="Orders" value={String(c.totalOrders)} />
+                <Tile label="Avg Order" value={formatINR(c.avgOrderValue)} />
+                <Tile label="Last Order" value={formatDate(c.lastOrderAtISO)} />
+                <Tile label="Outlets" value={`${outlets.length}`} />
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* ✅ DESKTOP VIEW (Table) */}
+      {/* Desktop table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr className="text-xs font-semibold text-gray-500">
-              <th className="text-left px-5 py-3">Customer</th>
-              <th className="text-left px-5 py-3">Customer ID</th>
-              <th className="text-left px-5 py-3">Outlets</th>
-              <th className="text-right px-5 py-3">Orders</th>
-              <th className="text-right px-5 py-3">Total Spent</th>
-              <th className="text-right px-5 py-3">Avg Order</th>
-              <th className="text-right px-5 py-3 whitespace-nowrap">
-                Last Order
-              </th>
+          <thead className="bg-rose-50">
+            <tr className="text-xs font-semibold text-rose-600">
+              <th className="px-5 py-3 text-left">Customer</th>
+              <th className="px-5 py-3 text-left">ID</th>
+              <th className="px-5 py-3 text-right">Orders</th>
+              <th className="px-5 py-3 text-right">Total Spent</th>
+              <th className="px-5 py-3 text-right">Avg Order</th>
+              <th className="px-5 py-3 text-right">Last Order</th>
             </tr>
           </thead>
 
           <tbody>
-            {customers.map((c) => {
-              const outletNames = getOutletNames(c.outletIds);
-
-              return (
-                <tr
-                  key={c.id}
-                  onClick={() => onRowClick(c)}
-                  className="border-t border-gray-200 hover:bg-gray-50 transition cursor-pointer"
-                >
-                  <td className="px-5 py-4">
-                    <div className="min-w-0">
-                      <p className="font-semibold text-gray-900 truncate">
-                        {c.name}
-                      </p>
-                      <p className="text-xs text-gray-500 truncate">
-                        {outletNames.length} outlet
-                        {outletNames.length > 1 ? "s" : ""}
-                      </p>
-                    </div>
-                  </td>
-
-                  <td className="px-5 py-4 text-gray-600">{c.id}</td>
-
-                  <td className="px-5 py-4">
-                    <div className="flex flex-wrap gap-2">
-                      {outletNames.slice(0, 2).map((name) => (
-                        <span
-                          key={name}
-                          className="px-2 py-1 rounded-full bg-gray-50 text-xs text-gray-700 border border-gray-200"
-                        >
-                          {name}
-                        </span>
-                      ))}
-
-                      {outletNames.length > 2 && (
-                        <span className="px-2 py-1 rounded-full bg-gray-100 text-xs text-gray-500 border border-gray-200">
-                          +{outletNames.length - 2}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-
-                  <td className="px-5 py-4 text-right font-semibold text-gray-900">
-                    {c.totalOrders}
-                  </td>
-
-                  <td className="px-5 py-4 text-right font-semibold text-gray-900">
-                    {formatINR(c.totalSpent)}
-                  </td>
-
-                  <td className="px-5 py-4 text-right text-gray-600">
-                    {formatINR(c.avgOrderValue)}
-                  </td>
-
-                  <td className="px-5 py-4 text-right text-gray-600 whitespace-nowrap">
-                    {formatDate(c.lastOrderAtISO)}
-                  </td>
-                </tr>
-              );
-            })}
+            {customers.map((c) => (
+              <tr
+                key={c.id}
+                onClick={() => onRowClick(c)}
+                className="border-t border-rose-200 hover:bg-rose-50 cursor-pointer"
+              >
+                <td className="px-5 py-4 font-semibold text-black-900">
+                  {c.name}
+                </td>
+                <td className="px-5 py-4 text-grey-600">{c.id}</td>
+                <td className="px-5 py-4 text-right">{c.totalOrders}</td>
+                <td className="px-5 py-4 text-right">
+                  {formatINR(c.totalSpent)}
+                </td>
+                <td className="px-5 py-4 text-right">
+                  {formatINR(c.avgOrderValue)}
+                </td>
+                <td className="px-5 py-4 text-right">
+                  {formatDate(c.lastOrderAtISO)}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -196,14 +117,11 @@ export default function CustomersTable({
   );
 }
 
-/* -----------------------------------------
- * Tile helper (same feel as reservations cards)
- * ----------------------------------------*/
-function InfoTile({ label, value }: { label: string; value: string }) {
+function Tile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
-      <p className="text-[11px] font-medium text-gray-500">{label}</p>
-      <p className="text-sm font-semibold text-gray-900 truncate">{value}</p>
+    <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2">
+      <p className="text-[11px] font-medium text-rose-600">{label}</p>
+      <p className="text-sm font-semibold text-rose-900 truncate">{value}</p>
     </div>
   );
 }
