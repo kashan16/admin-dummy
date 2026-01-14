@@ -1,4 +1,4 @@
-import type { Order, OrderStatus, OrderType, Outlet, OutletKey } from "@/types";
+import type { Order, OrderStatus, OrderType, Outlet, OutletKey, Reservation } from "@/types";
 
 /* ---------------------------------------------
   OUTLETS
@@ -282,3 +282,62 @@ export function updateMockOrderStatus(orderId: string, status: OrderStatus) {
 
   return mockOrders[idx];
 }
+
+export const mockReservations: Reservation[] = [
+  {
+    id: "RSV-1001",
+    customerName: "Ayaan Khan",
+    phone: "98765 43210",
+    guests: 4,
+    dateISO: "2026-01-14",
+    time: "07:30 PM",
+    table: "T-12",
+    notes: "Birthday celebration",
+    status: "CONFIRMED",
+    createdAtISO: "2026-01-14T10:20:00.000Z",
+  },
+  {
+    id: "RSV-1002",
+    customerName: "Sara Ahmed",
+    phone: "99999 11111",
+    guests: 2,
+    dateISO: "2026-01-14",
+    time: "08:00 PM",
+    table: "T-5",
+    status: "PENDING",
+    createdAtISO: "2026-01-14T11:05:00.000Z",
+  },
+  {
+    id: "RSV-1003",
+    customerName: "Rohit Sharma",
+    phone: "88888 22222",
+    guests: 6,
+    dateISO: "2026-01-14",
+    time: "09:15 PM",
+    table: "T-18",
+    notes: "Need baby chair",
+    status: "CONFIRMED",
+    createdAtISO: "2026-01-14T12:30:00.000Z",
+  },
+  {
+    id: "RSV-1004",
+    customerName: "Neha Verma",
+    guests: 3,
+    dateISO: "2026-01-15",
+    time: "07:00 PM",
+    status: "CANCELLED",
+    createdAtISO: "2026-01-14T09:10:00.000Z",
+  },
+  {
+    id: "RSV-1005",
+    customerName: "Zaid Ali",
+    phone: "77777 33333",
+    guests: 5,
+    dateISO: "2026-01-15",
+    time: "08:45 PM",
+    table: "T-9",
+    status: "SEATED",
+    createdAtISO: "2026-01-14T13:15:00.000Z",
+  },
+];
+

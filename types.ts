@@ -40,3 +40,19 @@ export interface Order {
     items: OrderItem[];
     createdAt: string;
 }
+
+export type ReservationStatus = "PENDING" | "CONFIRMED" | "SEATED" | "CANCELLED";
+
+export type Reservation = {
+    id: string;
+    customerName: string;
+    phone?: string;
+    guests: number;
+    dateISO: string; // "2026-01-14"
+    time: string; // "07:30 PM"
+    table?: string; // "T-4"
+    notes?: string;
+    status: ReservationStatus;
+    createdAtISO: string;
+};
+
