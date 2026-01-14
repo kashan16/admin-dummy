@@ -10,9 +10,6 @@ export type OrderType = 'DINE_IN' | 'PACK' | 'ORDER';
 
 export type OrderStatus =
     | 'pending'
-    | 'accepted'
-    | 'preparing'
-    | 'ready'
     | 'delivered'
     | 'cancelled';
 

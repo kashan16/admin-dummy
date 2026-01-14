@@ -41,7 +41,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <div className="min-w-0">
           <HourlyOrdersChart />
         </div>

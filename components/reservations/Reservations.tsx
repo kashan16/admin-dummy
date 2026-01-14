@@ -5,6 +5,7 @@ import { Reservation, ReservationStatus } from "@/types";
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+
 import CreateReservationModal from "./CreateReservationModal";
 import ReservationModal from "./ReservationModal";
 import ReservationsToolbar from "./ReservationsToolbar";
@@ -12,111 +13,80 @@ import ReservationsTable from "./ReservationTable";
 
 export default function Reservations() {
   const [rows, setRows] = useState<Reservation[]>(mockReservations);
-
   const [status, setStatus] = useState<"ALL" | ReservationStatus>("ALL");
   const [selected, setSelected] = useState<Reservation | null>(null);
-
-  // ✅ NEW: Create modal state
   const [createOpen, setCreateOpen] = useState(false);
 
-  // ✅ dummy functions
-  const confirmReservation = async (id: string) => {
-    setRows((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "CONFIRMED" } : r))
-    );
-    toast.success("Reservation confirmed");
-  };
-
-  const seatReservation = async (id: string) => {
-    setRows((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "SEATED" } : r))
-    );
-    toast.success("Marked as seated");
-  };
-
-  const cancelReservation = async (id: string) => {
-    setRows((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "CANCELLED" } : r))
-    );
-    toast.error("Reservation cancelled");
-  };
-
-  // ✅ NEW: Dummy create reservation
-  const createReservation = async (newReservation: Reservation) => {
-    setRows((prev) => [newReservation, ...prev]);
-    toast.success("Reservation created");
-  };
-
-  const filtered = useMemo(() => {
-    if (status === "ALL") return rows;
-    return rows.filter((r) => r.status === status);
-  }, [rows, status]);
-
-  const counts = useMemo(() => {
-    const base: Record<string, number> = {
-      ALL: rows.length,
-      PENDING: 0,
-      CONFIRMED: 0,
-      SEATED: 0,
-      CANCELLED: 0,
-    };
-    for (const r of rows) base[r.status] += 1;
-    return base;
-  }, [rows]);
+  const filtered = useMemo(
+    () => (status === "ALL" ? rows : rows.filter((r) => r.status === status)),
+    [rows, status]
+  );
 
   return (
     <div className="space-y-6">
-      {/* ✅ Header + Add Button */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">Reservations</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Track table bookings and manage confirmations.
+          <h1 className="text-lg font-semibold text-rose-900">
+            Reservations
+          </h1>
+          <p className="text-sm text-rose-600">
+            Manage table bookings
           </p>
         </div>
 
         <button
           onClick={() => setCreateOpen(true)}
-          className="
-            h-11 px-4 rounded-xl
-            bg-blue-700 hover:bg-blue-800
-            text-white text-sm font-semibold
-            transition-all duration-200
-            shadow-sm
-          "
+          className="h-11 w-11 rounded-xl bg-[#FB7185] hover:bg-[#F43F5E] text-white flex items-center justify-center"
         >
-          <Plus className="w-5 h-5"/>
+          <Plus />
         </button>
       </div>
 
-      <ReservationsToolbar
-        status={status}
-        onStatusChange={setStatus}
-        counts={counts}
-      />
+      <ReservationsToolbar status={status} onStatusChange={setStatus} counts={{}} />
 
       <ReservationsTable
         reservations={filtered}
-        onOpen={(r) => setSelected(r)}
-        onConfirm={confirmReservation}
-        onSeat={seatReservation}
-        onCancel={cancelReservation}
+        onOpen={setSelected}
+        onConfirm={async (id) => {
+          setRows((r) =>
+            r.map((x) => (x.id === id ? { ...x, status: "CONFIRMED" } : x))
+          );
+          toast.success("Confirmed");
+        }}
+        onSeat={async (id) => {
+          setRows((r) =>
+            r.map((x) => (x.id === id ? { ...x, status: "SEATED" } : x))
+          );
+          toast.success("Seated");
+        }}
+        onCancel={async (id) => {
+          setRows((r) =>
+            r.map((x) => (x.id === id ? { ...x, status: "CANCELLED" } : x))
+          );
+          toast.error("Cancelled");
+        }}
       />
 
       {selected && (
         <ReservationModal
           reservation={selected}
           onClose={() => setSelected(null)}
-          onConfirm={confirmReservation}
-          onSeat={seatReservation}
-          onCancel={cancelReservation}
+          onConfirm={async (id) => {
+            toast.success("Confirmed");
+            setSelected(null);
+          }}
+          onSeat={async () => {}}
+          onCancel={async () => {}}
         />
       )}
 
       <CreateReservationModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        onCreate={createReservation}
+        onCreate={async (r) => {
+          setRows((prev) => [r, ...prev]);
+          toast.success("Reservation created");
+        }}
       />
     </div>
   );
