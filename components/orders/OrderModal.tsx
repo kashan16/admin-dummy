@@ -25,22 +25,7 @@ const STATUS_CONFIG: Record<
   pending: {
     label: "Pending",
     badge: "bg-gray-200 text-gray-700 border-gray-300",
-    next: ["accepted", "cancelled"],
-  },
-  accepted: {
-    label: "Accepted",
-    badge: "bg-purple-200 text-purple-800 border-purple-300",
-    next: ["preparing", "cancelled"],
-  },
-  preparing: {
-    label: "Preparing",
-    badge: "bg-yellow-200 text-yellow-800 border-yellow-300",
-    next: ["ready", "cancelled"],
-  },
-  ready: {
-    label: "Ready",
-    badge: "bg-blue-200 text-blue-800 border-blue-300",
-    next: ["delivered"],
+    next: ["cancelled"],
   },
   delivered: {
     label: "Delivered",
