@@ -2,23 +2,31 @@
 
 import { MOCK_OUTLETS, mockOrders } from "@/lib/mockData";
 import type { Order, OrderStatus, OrderType, OutletScope } from "@/types";
+import { ChevronDown, ListFilter, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { OrderModal } from "./OrderModal";
 import { OrdersGrid } from "./OrdersGrid";
-import { ChevronDown, ListFilter, X } from "lucide-react";
 
-const STATUS_OPTIONS: Array<{ label: string; value: "all" | OrderStatus }> = [
-  { label: "All", value: "all" },
-  { label: "Pending", value: "pending" },
-  { label: "Delivered", value: "delivered" },
-  { label: "Cancelled", value: "cancelled" },
+const STATUS_OPTIONS: Array<{ 
+  label: string; 
+  value: "all" | OrderStatus;
+  color: string;
+}> = [
+  { label: "All", value: "all", color: "bg-black text-white hover:bg-black/90" },
+  { label: "Pending", value: "pending", color: "bg-slate-500 text-white hover:bg-slate-600" },
+  { label: "Delivered", value: "delivered", color: "bg-emerald-500 text-white hover:bg-emerald-600" },
+  { label: "Cancelled", value: "cancelled", color: "bg-rose-500 text-white hover:bg-rose-600" },
 ];
 
-const TYPE_OPTIONS: Array<{ label: string; value: "all" | OrderType }> = [
-  { label: "All", value: "all" },
-  { label: "Table", value: "DINE_IN" },
-  { label: "Pack", value: "PACK" },
-  { label: "Delivery", value: "ORDER" },
+const TYPE_OPTIONS: Array<{ 
+  label: string; 
+  value: "all" | OrderType;
+  color: string;
+}> = [
+  { label: "All", value: "all", color: "bg-black text-white hover:bg-black/90" },
+  { label: "Table", value: "DINE_IN", color: "bg-green-500 text-white hover:bg-green-600" },
+  { label: "Pack", value: "PACK", color: "bg-yellow-500 text-white hover:bg-yellow-600" },
+  { label: "Delivery", value: "ORDER", color: "bg-red-500 text-white hover:bg-red-600" },
 ];
 
 export default function Orders() {
@@ -57,8 +65,8 @@ export default function Orders() {
   return (
     <div className="space-y-4 px-3 sm:px-6 lg:px-10 xl:px-14 max-w-screen-2xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             Orders
           </h1>
@@ -67,25 +75,23 @@ export default function Orders() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl border"
-          >
-            <ListFilter className="w-4 h-4" />
-            <span className="text-sm font-semibold">Filters</span>
-            {activeFilterCount > 0 && (
-              <span className="w-5 h-5 text-[10px] rounded-full flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
-            <ChevronDown
-              className={`w-4 h-4 transition-transform ${
-                showFilters ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-        </div>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border hover:bg-gray-50 transition-colors shrink-0"
+        >
+          <ListFilter className="w-4 h-4" />
+          <span className="text-sm font-semibold hidden sm:inline">Filters</span>
+          {activeFilterCount > 0 && (
+            <span className="w-5 h-5 text-[10px] bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${
+              showFilters ? "rotate-180" : ""
+            }`}
+          />
+        </button>
       </div>
 
       {/* Filters */}
@@ -96,7 +102,7 @@ export default function Orders() {
             : "max-h-0 opacity-0 overflow-hidden"
         }`}
       >
-        <div className="p-4 sm:p-6 rounded-2xl space-y-6">
+        <div className="p-4 sm:p-6 rounded-2xl bg-gray-50 border space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-sm font-bold">Refine Results</h3>
             {activeFilterCount > 0 && (
@@ -106,20 +112,38 @@ export default function Orders() {
                   setType("all");
                   setStatus("all");
                 }}
-                className="text-xs font-bold flex items-center gap-1"
+                className="text-xs font-bold flex items-center gap-1 text-red-600 hover:text-red-700 transition-colors"
               >
-                <X className="w-3 h-3" /> Reset
+                <X className="w-3 h-3" /> Reset All
               </button>
             )}
           </div>
 
           <div className="grid gap-6">
+            {/* Outlet Filter */}
             <div>
-              <p className="text-xs font-bold mb-2">Outlet</p>
+              <p className="text-xs font-bold mb-3 text-gray-700">Outlet</p>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => setOutlet("ALL")}>All</button>
+                <button
+                  onClick={() => setOutlet("ALL")}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                    outlet === "ALL"
+                      ? "bg-blue-500 text-white shadow-md scale-105"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  All Outlets
+                </button>
                 {MOCK_OUTLETS.map((o) => (
-                  <button key={o.id} onClick={() => setOutlet(o.id)}>
+                  <button
+                    key={o.id}
+                    onClick={() => setOutlet(o.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                      outlet === o.id
+                        ? "bg-blue-500 text-white shadow-md scale-105"
+                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
                     {o.name}
                   </button>
                 ))}
@@ -127,22 +151,40 @@ export default function Orders() {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6">
+              {/* Type Filter */}
               <div>
-                <p className="text-xs font-bold mb-2">Type</p>
+                <p className="text-xs font-bold mb-3 text-gray-700">Order Type</p>
                 <div className="flex flex-wrap gap-2">
                   {TYPE_OPTIONS.map((t) => (
-                    <button key={t.value} onClick={() => setType(t.value)}>
+                    <button
+                      key={t.value}
+                      onClick={() => setType(t.value)}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                        type === t.value
+                          ? `${t.color} shadow-md scale-105`
+                          : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
                       {t.label}
                     </button>
                   ))}
                 </div>
               </div>
 
+              {/* Status Filter */}
               <div>
-                <p className="text-xs font-bold mb-2">Status</p>
+                <p className="text-xs font-bold mb-3 text-gray-700">Status</p>
                 <div className="flex flex-wrap gap-2">
                   {STATUS_OPTIONS.map((s) => (
-                    <button key={s.value} onClick={() => setStatus(s.value)}>
+                    <button
+                      key={s.value}
+                      onClick={() => setStatus(s.value)}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                        status === s.value
+                          ? `${s.color} shadow-md scale-105`
+                          : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
                       {s.label}
                     </button>
                   ))}

@@ -7,11 +7,11 @@ import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  Bike,
   ChevronDown,
   ChevronUp,
-  Utensils,
   Package,
-  Bike,
+  Utensils,
 } from "lucide-react";
 
 interface OrderCardProps {
@@ -32,7 +32,7 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
 /* Left border accent by STATUS */
 /* ---------------------------------- */
 const STATUS_BORDER_STYLES: Record<OrderStatus, string> = {
-  pending: "border-l-yellow-500",
+  pending: "border-l-gray-500",
   delivered: "border-l-green-500",
   cancelled: "border-l-red-500",
 };
@@ -118,6 +118,7 @@ export default function OrderCard({ order, onClick }: OrderCardProps) {
       className={[
         "cursor-pointer rounded-2xl border border-l-4 bg-white p-4 shadow-sm transition-all",
         "hover:shadow-md hover:scale-[1.02]",
+        "h-full flex flex-col",
         borderAccent,
       ].join(" ")}
     >
@@ -189,28 +190,30 @@ export default function OrderCard({ order, onClick }: OrderCardProps) {
         </span>
       </div>
 
-      {/* ITEMS */}
-      <div className="mt-3 space-y-1">
-        {visibleItems.map((item, idx) => {
-          const name = item.name?.trim() || "Item";
-          const qty = item.quantity ?? 0;
+      {/* ITEMS - flex-1 to take remaining space */}
+      <div className="mt-3 space-y-1 flex-1 flex flex-col">
+        <div className="space-y-1">
+          {visibleItems.map((item, idx) => {
+            const name = item.name?.trim() || "Item";
+            const qty = item.quantity ?? 0;
 
-          return (
-            <div key={idx} className="flex items-center justify-between gap-2">
-              <p className="truncate text-sm font-semibold text-gray-900">
-                {name}
-              </p>
+            return (
+              <div key={idx} className="flex items-center justify-between gap-2">
+                <p className="truncate text-sm font-semibold text-gray-900">
+                  {name}
+                </p>
 
-              <span className="shrink-0 px-2 py-0.5 text-[11px] font-extrabold rounded-md border bg-white/70">
-                ×{qty}
-              </span>
-            </div>
-          );
-        })}
+                <span className="shrink-0 px-2 py-0.5 text-[11px] font-extrabold rounded-md border bg-white/70">
+                  ×{qty}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
-        {/* SEE MORE / LESS */}
+        {/* SEE MORE / LESS - push to bottom */}
         {items.length > 2 && (
-          <div className="pt-2">
+          <div className="pt-2 mt-auto">
             <Button
               type="button"
               variant="ghost"

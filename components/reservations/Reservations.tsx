@@ -2,7 +2,7 @@
 
 import { mockReservations } from "@/lib/mockData";
 import { Reservation, ReservationStatus } from "@/types";
-import { Plus } from "lucide-react";
+import { ChevronDown, ListFilter, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -16,65 +16,73 @@ export default function Reservations() {
   const [status, setStatus] = useState<"ALL" | ReservationStatus>("ALL");
   const [selected, setSelected] = useState<Reservation | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const filtered = useMemo(
     () => (status === "ALL" ? rows : rows.filter((r) => r.status === status)),
     [rows, status]
   );
 
+  const activeFilterCount = status === "ALL" ? 0 : 1;
+
   return (
     <div className="space-y-4 px-3 sm:px-6 lg:px-10 max-w-screen-2xl mx-auto">
       {/* Header */}
-<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-  <div className="flex items-center justify-between sm:block">
-    <div>
-      <h1 className="text-lg font-semibold text-rose-900">
-        Reservations
-      </h1>
-      <p className="text-sm text-rose-600">
-        Manage table bookings
-      </p>
-    </div>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight text-rose-900">
+            Reservations
+          </h1>
+          <p className="text-sm text-rose-600">
+            Manage table bookings
+          </p>
+        </div>
 
-    {/* Mobile button */}
-    <button
-      onClick={() => setCreateOpen(true)}
-      className="
-        h-11 w-11
-        rounded-xl
-        bg-[#FB7185] hover:bg-[#F43F5E]
-        text-white
-        flex items-center justify-center
-        sm:hidden
-      "
-    >
-      <Plus />
-    </button>
-  </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Filter Button */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border hover:bg-gray-50 transition-colors"
+          >
+            <ListFilter className="w-5 h-5" />
+            <span className="text-sm font-semibold hidden sm:inline">Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="w-5 h-5 text-[10px] bg-rose-500 text-white rounded-full flex items-center justify-center font-bold">
+                {activeFilterCount}
+              </span>
+            )}
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                showFilters ? "rotate-180" : ""
+              }`}
+            />
+          </button>
 
-  {/* Desktop button */}
-  <button
-    onClick={() => setCreateOpen(true)}
-    className="
-      h-11 w-11
-      rounded-xl
-      bg-[#FB7185] hover:bg-[#F43F5E]
-      text-white
-      flex items-center justify-center
-      hidden sm:flex
-    "
-  >
-    <Plus />
-  </button>
-</div>
+          {/* Create Button */}
+          <button
+            onClick={() => setCreateOpen(true)}
+            className="h-10 w-10 rounded-xl bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition-colors"
+            aria-label="Create reservation"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
 
-
-      {/* Toolbar */}
-      <ReservationsToolbar
-        status={status}
-        onStatusChange={setStatus}
-        counts={{}}
-      />
+      {/* Toolbar - Now collapsible */}
+      <div
+        className={`transition-all duration-300 ${
+          showFilters
+            ? "max-h-96 opacity-100"
+            : "max-h-0 opacity-0 overflow-hidden"
+        }`}
+      >
+        <ReservationsToolbar
+          status={status}
+          onStatusChange={setStatus}
+          counts={{}}
+        />
+      </div>
 
       {/* Table */}
       <div className="overflow-x-auto">

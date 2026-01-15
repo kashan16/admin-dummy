@@ -19,13 +19,14 @@ export function OrdersGrid({ orders, onSelect }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 auto-rows-fr">
       {orders.map((order) => (
-        <OrderCard
-          key={order.id}
-          order={order}
-          onClick={() => onSelect(order)}
-        />
+        <div key={order.id} className="sm:h-full">
+          <OrderCard
+            order={order}
+            onClick={() => onSelect(order)}
+          />
+        </div>
       ))}
     </div>
   );
