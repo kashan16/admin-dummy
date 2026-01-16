@@ -339,3 +339,64 @@ export const mockReservations: Reservation[] = [
     createdAtISO: "2026-01-14T15:10:00.000Z",
   },
 ];
+
+export function formatISTDateTimeFilename() {
+  const d = new Date();
+
+  // ✅ IST-format safe filename
+  const parts = new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  })
+    .formatToParts(d)
+    .reduce<Record<string, string>>((acc, p) => {
+      if (p.type !== "literal") acc[p.type] = p.value;
+      return acc;
+    }, {});
+
+  const dd = parts.day;
+  const mm = parts.month;
+  const yyyy = parts.year;
+  const hh = parts.hour;
+  const min = parts.minute;
+  const ampm = parts.dayPeriod?.toUpperCase() ?? "NA";
+
+  return `orders_${dd}-${mm}-${yyyy}_${hh}-${min}${ampm}`;
+}
+
+export function calcSubtotal(order: Order) {
+  return order.items.reduce((sum, it) => sum + it.price * it.quantity, 0);
+}
+
+export function calcTax(subtotal: number) {
+  return Math.round(subtotal * 0.05);
+}
+
+export function buildItemsText(order: Order) {
+  return order.items
+    .map((it) => `${it.name} x${it.quantity} (₹${it.price})`)
+    .join(" | ");
+}
+
+export function formatTimeIST(iso: string) {
+  return new Date(iso).toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kolkata",
+  });
+}
+
+export function formatDateIST(iso: string) {
+  return new Date(iso).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  });
+}

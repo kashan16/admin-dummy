@@ -60,7 +60,7 @@ export default function CustomersTable({
               className="rounded-2xl border border-rose-200 bg-white p-4 shadow-sm hover:shadow-md transition cursor-pointer"
             >
               <p className="font-semibold text-rose-900">{c.name}</p>
-              <p className="text-xs text-rose-600">{c.id}</p>
+              <p className="text-xs text-rose-600">{c.phone}</p>
 
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <Tile label="Orders" value={String(c.totalOrders)} />
@@ -97,7 +97,7 @@ export default function CustomersTable({
                 <td className="px-5 py-4 font-semibold text-black-900">
                   {c.name}
                 </td>
-                <td className="px-5 py-4 text-grey-600">{c.id}</td>
+                <td className="px-5 py-4 text-grey-600">{c.phone}</td>
                 <td className="px-5 py-4 text-right">{c.totalOrders}</td>
                 <td className="px-5 py-4 text-right">
                   {formatINR(c.totalSpent)}

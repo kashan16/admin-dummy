@@ -1,9 +1,12 @@
 "use client";
 
-import { MOCK_OUTLETS, mockOrders } from "@/lib/mockData";
+import { useExportCSV } from "@/hooks/useExportCSV";
+import { buildItemsText, calcSubtotal, calcTax, formatDateIST, formatISTDateTimeFilename, formatTimeIST, MOCK_OUTLETS, mockOrders } from "@/lib/mockData";
 import type { Order, OrderStatus, OrderType, OutletScope } from "@/types";
 import { ChevronDown, ListFilter, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { BiExport } from "react-icons/bi";
+import { Button } from "../ui/button";
 import { OrderModal } from "./OrderModal";
 import { OrdersGrid } from "./OrdersGrid";
 
@@ -36,6 +39,8 @@ export default function Orders() {
   const [outlet, setOutlet] = useState<OutletScope>("ALL");
   const [type, setType] = useState<"all" | OrderType>("all");
   const [status, setStatus] = useState<"all" | OrderStatus>("all");
+
+  const { exportCSV } = useExportCSV();
 
   const outletNameById = useMemo(
     () => Object.fromEntries(MOCK_OUTLETS.map((o) => [o.id, o.name])),
@@ -73,6 +78,64 @@ export default function Orders() {
           <p className="text-sm text-gray-500">
             Real-time order management
           </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="outline"
+            className="rounded-xl border-rose-200 text-rose-700 hover:bg-rose-50"
+            disabled={filtered.length === 0}
+            onClick={() => {
+              exportCSV(filtered, {
+                filename: `${formatISTDateTimeFilename()}.csv`,
+                headers: {
+                  id: "Order ID",
+                  customer: "Customer",
+                  outletName: "Outlet Name",
+                  outlet: "Outlet ID",
+                  type: "Order Type",
+                  status: "Status",
+                  table: "Table",
+                  createdDate: "Created Date (IST)",
+                  createdTime: "Created Time (IST)",
+                  createdAtISO: "Created At (ISO)",
+                  itemsCount: "Items Count",
+                  itemsText: "Items (Readable)",
+                  itemsJSON: "Items (JSON)",
+                  subtotal: "Subtotal",
+                  tax: "Tax (5%)",
+                  total: "Total",
+                },
+                mapRow: (o) => {
+                  const subtotal = calcSubtotal(o);
+                  const tax = calcTax(subtotal);
+                  const total = subtotal + tax;
+
+                  const itemsCount = o.items.reduce((sum, it) => sum + it.quantity, 0);
+
+                  return {
+                    id: o.id,
+                    customer: o.customer,
+                    outletName: o.outletName ?? "",
+                    outlet: o.outlet,
+                    type: o.type,
+                    status: o.status,
+                    table: o.table === "-" ? "—" : o.table,
+                    createdDate: formatDateIST(o.createdAt),
+                    createdTime: formatTimeIST(o.createdAt),
+                    createdAtISO: o.createdAt,
+                    itemsCount,
+                    itemsText: buildItemsText(o),
+                    // ✅ Useful for re-importing later
+                    itemsJSON: JSON.stringify(o.items),
+                    subtotal,
+                    tax,
+                    total,
+                  }
+                }
+              })
+            }}>
+              <BiExport className="w-5 h-5"/>
+          </Button>
         </div>
 
         <button

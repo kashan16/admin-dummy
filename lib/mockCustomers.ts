@@ -26,6 +26,23 @@ export function buildMockCustomersFromOrders(
   orders: Order[],
   outlets: Outlet[]
 ): Customer[] {
+
+  function makeMockPhone(seed: string) {
+    // Stable "hash" from seed
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+    }
+    // Make Indian mobile starting with 9/8/7
+    const starters = ["9", "8", "7"];
+    const start = starters[hash % starters.length];
+    const rest = String(100000000 + (hash % 900000000)); // 9 digits
+    const num = start + rest; // 10 digits
+    // Format like: 98765 43210
+    return `${num.slice(0, 5)} ${num.slice(5)}`;
+  }
+
+
   const map = new Map<string, Customer>();
 
   for (const order of orders) {
@@ -37,7 +54,7 @@ export function buildMockCustomersFromOrders(
       map.set(name, {
         id: `CUST-${name.toLowerCase().replace(/\s+/g, "-")}`,
         name,
-        phone: undefined, // mock: optional if you want later
+        phone: makeMockPhone(name), // mock: optional if you want later
         outletIds: [order.outlet],
         totalOrders: 1,
         totalSpent: orderTotal,
