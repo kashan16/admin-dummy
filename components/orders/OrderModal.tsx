@@ -2,10 +2,16 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { Order, OrderStatus } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
 import { BillPrint } from "./BillPrint";
 
 const STATUS_CONFIG: Record<
@@ -46,6 +52,9 @@ export function OrderModal({
   const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
 
+  // ✅ ref for bill print component
+  const billRef = useRef<HTMLDivElement>(null);
+
   const subtotal = useMemo(
     () => order.items.reduce((s, i) => s + i.price * i.quantity, 0),
     [order.items]
@@ -55,6 +64,34 @@ export function OrderModal({
   const total = subtotal + tax;
 
   const statusConfig = STATUS_CONFIG[currentStatus];
+
+  // ✅ react-to-print v3+ (onBeforeGetContent removed, use onBeforePrint)
+  const handlePrint = useReactToPrint({
+    contentRef: billRef,
+    documentTitle: `Bill-${order.id.slice(0, 8)}`,
+    pageStyle: `
+      @page {
+        size: 80mm auto;
+        margin: 0;
+      }
+      @media print {
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      }
+    `,
+    onBeforePrint: async () => {
+      // ✅ Optional pre-print logic
+    },
+    onAfterPrint: () => {
+      console.log("Print completed");
+    },
+  });
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
     setStatusLoading(true);
@@ -66,7 +103,7 @@ export function OrderModal({
 
   useEffect(() => {
     if (statusMenuOpen) {
-      // Optional: you can add a toast notification here
+      // Optional: toast or analytics
     }
   }, [statusMenuOpen]);
 
@@ -113,7 +150,7 @@ export function OrderModal({
           </div>
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-3">
-            <Button onClick={() => window.print()}>Print</Button>
+            <Button onClick={handlePrint}>Print</Button>
           </div>
 
           {/* STATUS CHANGE SECTION */}
@@ -145,12 +182,25 @@ export function OrderModal({
               disabled={statusLoading || statusConfig.next.length === 0}
               onClick={() => setStatusMenuOpen((p) => !p)}
             >
-              {statusLoading ? "Updating…" : statusConfig.next.length === 0 ? order.status : 'Pending'}
+              {statusLoading
+                ? "Updating…"
+                : statusConfig.next.length === 0
+                ? statusConfig.label
+                : "Change Status"}
             </Button>
           </div>
         </div>
 
-        <BillPrint order={order} subtotal={subtotal} tax={tax} total={total} />
+        {/* ✅ Print-only component (kept mounted, not display:none) */}
+        <div className="sr-only print:not-sr-only">
+          <BillPrint
+            ref={billRef}
+            order={order}
+            subtotal={subtotal}
+            tax={tax}
+            total={total}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
