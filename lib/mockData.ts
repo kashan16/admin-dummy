@@ -1,11 +1,11 @@
 import type {
+  KPI,
   Order,
   OrderStatus,
   OrderType,
   Outlet,
   OutletKey,
   Reservation,
-  KPI,
 } from "@/types";
 
 /* ---------------------------------------------
@@ -298,6 +298,7 @@ export const mockReservations: Reservation[] = [
   {
     id: "RSV-1004",
     customerName: "Neha Verma",
+    phone: "78978 88888",
     guests: 3,
     dateISO: "2026-01-15",
     time: "07:00 PM",
@@ -330,6 +331,7 @@ export const mockReservations: Reservation[] = [
   {
     id: "RSV-1007",
     customerName: "Aman Gupta",
+    phone: "67867 76538",
     guests: 4,
     dateISO: "2026-01-16",
     time: "07:45 PM",

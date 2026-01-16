@@ -58,31 +58,26 @@ function ActionButtons({
     <div className="flex flex-wrap gap-2 justify-end">
       {r.status === "PENDING" && (
         <Button
-          className="rounded-xl bg-rose-100 text-rose-800 border-rose-200"
-          size="sm"
-          onClick={() => onConfirm(r.id)}
-        >
+        className="w-24 rounded-xl bg-rose-100 text-rose-800 border-rose-200"
+        size="sm"
+        onClick={() => onConfirm(r.id)}>
           Confirm
         </Button>
       )}
-
       {r.status === "CONFIRMED" && (
         <Button
-          className="rounded-xl bg-[#FB7185] hover:bg-[#F43F5E]"
-          size="sm"
-          onClick={() => onSeat(r.id)}
-        >
+        className="w-24 rounded-xl bg-[#FB7185] hover:bg-[#F43F5E]"
+        size="sm"
+        onClick={() => onSeat(r.id)}>
           Seat
         </Button>
       )}
-
       {r.status !== "CANCELLED" && r.status !== "SEATED" && (
         <Button
-          variant="outline"
-          size="sm"
-          className="rounded-xl border-gray-200"
-          onClick={() => onCancel(r.id)}
-        >
+        variant="outline"
+        size="sm"
+        className="w-24 rounded-xl border-gray-200"
+        onClick={() => onCancel(r.id)}>
           Cancel
         </Button>
       )}
@@ -169,13 +164,11 @@ export default function ReservationsTable({
           />
         </button>
       </div>
-
-      {/* Filters – fixed animation */}
       {/* Filters */}
       <div
       className={`transition-all duration-300 ease-in-out ${
         showFilters
-        ? "max-h-[500px] opacity-100"
+        ? "max-h-125 opacity-100"
         : "max-h-0 opacity-0 overflow-hidden"
         }`}>
         <div className="p-4 bg-gray-50/50 border-b border-gray-100 space-y-4">
@@ -231,12 +224,12 @@ export default function ReservationsTable({
             <div className="flex justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-semibold truncate">{r.customerName}</p>
-                <p className="text-xs truncate">{r.id}</p>
+                <p className="text-xs truncate">{r.phone}</p>
               </div>
 
               <span
                 className={[
-                  "rounded-full border px-3 py-1 text-[11px] font-semibold",
+                  "inline-flex items-center rounded-full border w-28 px-3 py-1 justify-center font-bold",
                   statusPill(r.status),
                 ].join(" ")}
               >
@@ -245,9 +238,8 @@ export default function ReservationsTable({
             </div>
 
             <div
-              className="mt-4 pt-3 border-t"
-              onClick={(e) => e.stopPropagation()}
-            >
+              className="mt-4 flex pt-3 border-t justify-center"
+              onClick={(e) => e.stopPropagation()}>
               <ActionButtons
                 r={r}
                 onConfirm={onConfirm}
@@ -260,58 +252,97 @@ export default function ReservationsTable({
       </div>
 
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr className="text-xs font-semibold text-gray-500">
-              <th className="text-left px-5 py-3">Customer</th>
-              <th className="px-5 py-3">Date</th>
-              <th className="px-5 py-3">Time</th>
-              <th className="px-5 py-3">Guests</th>
-              <th className="px-5 py-3">Table</th>
-              <th className="px-5 py-3">Status</th>
-              <th className="text-right px-5 py-3">Actions</th>
-            </tr>
-          </thead>
+<div className="hidden md:block overflow-x-auto">
+  <table className="w-full text-sm">
+    <thead className="bg-gray-50 sticky top-0 z-10">
+      <tr className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">
+        <th className="text-left px-6 py-4">Customer</th>
+        <th className="text-left px-6 py-4 whitespace-nowrap">Phone</th>
+        <th className="px-6 py-4 text-center whitespace-nowrap">Date</th>
+        <th className="px-6 py-4 text-center whitespace-nowrap">Time</th>
+        <th className="px-6 py-4 text-center whitespace-nowrap">Guests</th>
+        <th className="px-6 py-4 text-center whitespace-nowrap">Table</th>
+        <th className="px-6 py-4 text-center whitespace-nowrap">Status</th>
+        <th className="text-right px-6 py-4 whitespace-nowrap">Actions</th>
+      </tr>
+    </thead>
 
-          <tbody>
-            {filteredReservations.map((r) => (
-              <tr
-                key={r.id}
-                onClick={() => onOpen(r)}
-                className="border-t hover:bg-gray-50 cursor-pointer"
-              >
-                <td className="px-5 py-4 font-semibold">{r.customerName}</td>
-                <td className="px-5 py-4">{r.dateISO}</td>
-                <td className="px-5 py-4">{r.time}</td>
-                <td className="px-5 py-4">{r.guests}</td>
-                <td className="px-5 py-4">{r.table ?? "—"}</td>
-                <td className="px-5 py-4">
-                  <span
-                    className={[
-                      "rounded-full border px-3 py-1 text-[11px] font-semibold",
-                      statusPill(r.status),
-                    ].join(" ")}
-                  >
-                    {r.status}
-                  </span>
-                </td>
-                <td
-                  className="px-5 py-4 text-right"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <ActionButtons
-                    r={r}
-                    onConfirm={onConfirm}
-                    onSeat={onSeat}
-                    onCancel={onCancel}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <tbody className="divide-y divide-gray-100">
+      {filteredReservations.map((r) => (
+        <tr
+          key={r.id}
+          onClick={() => onOpen(r)}
+          className="group cursor-pointer transition-colors hover:bg-gray-50"
+        >
+          {/* Customer */}
+          <td className="px-6 py-5">
+            <div className="flex flex-col">
+              <p className="font-semibold text-gray-900 leading-tight">
+                {r.customerName}
+              </p>
+              <p className="text-xs text-gray-500 leading-tight">
+                ID: {r.id}
+              </p>
+            </div>
+          </td>
+
+          {/* Phone */}
+          <td className="px-6 py-5 whitespace-nowrap font-medium text-gray-800">
+            {r.phone ?? "—"}
+          </td>
+
+          {/* Date */}
+          <td className="px-6 py-5 text-center whitespace-nowrap text-gray-700">
+            {r.dateISO}
+          </td>
+
+          {/* Time */}
+          <td className="px-6 py-5 text-center whitespace-nowrap text-gray-700">
+            {r.time}
+          </td>
+
+          {/* Guests */}
+          <td className="px-6 py-5 text-center whitespace-nowrap font-semibold text-gray-900">
+            {r.guests}
+          </td>
+
+          {/* Table */}
+          <td className="px-6 py-5 text-center whitespace-nowrap text-gray-700">
+            {r.table ?? "—"}
+          </td>
+
+          {/* Status */}
+          <td className="px-6 py-5 text-center whitespace-nowrap">
+            <span
+              className={[
+                "inline-flex items-center rounded-full border w-28 px-3 py-1 justify-center font-bold",
+                statusPill(r.status),
+              ].join(" ")}
+            >
+              {r.status}
+            </span>
+          </td>
+
+          {/* Actions */}
+          <td
+            className="px-6 py-5 text-right whitespace-nowrap"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="inline-flex justify-end">
+              <ActionButtons
+                r={r}
+                onConfirm={onConfirm}
+                onSeat={onSeat}
+                onCancel={onCancel}
+              />
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 }
