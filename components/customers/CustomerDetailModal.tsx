@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Building2, Clock, IndianRupee, ReceiptText } from "lucide-react";

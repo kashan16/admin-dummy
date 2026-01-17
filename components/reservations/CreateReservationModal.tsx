@@ -2,198 +2,187 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
-import { Reservation, ReservationStatus } from "@/types";
+import type { Reservation, ReservationStatus } from "@/types";
 import { useMemo, useState } from "react";
 
-type Props = {
-  open: boolean;
-  onClose: () => void;
-  onCreate: (r: Reservation) => Promise<void>;
-};
-
-function todayISO() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
+function generateReservationId(existingCount: number) {
+  return `RSV-${1000 + existingCount + 1}`;
 }
 
-export default function CreateReservationModal({
+export function CreateReservationModal({
   open,
   onClose,
   onCreate,
-}: Props) {
+  existingCount,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onCreate: (reservation: Reservation) => void;
+  existingCount: number;
+}) {
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
-  const [guests, setGuests] = useState(2);
-  const [dateISO, setDateISO] = useState(todayISO());
-  const [time, setTime] = useState("07:30 PM");
+  const [guests, setGuests] = useState<number>(2);
+  const [dateISO, setDateISO] = useState("");
+  const [time, setTime] = useState("");
   const [table, setTable] = useState("");
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<ReservationStatus>("PENDING");
-  const [saving, setSaving] = useState(false);
 
-  const canSubmit = useMemo(
-    () => customerName.trim().length >= 2 && guests >= 1 && dateISO && time,
-    [customerName, guests, dateISO, time]
-  );
+  const canCreate = useMemo(() => {
+    return customerName.trim().length > 1 && guests >= 1 && dateISO && time;
+  }, [customerName, guests, dateISO, time]);
 
-  async function handleSubmit() {
-    if (!canSubmit) return;
-    setSaving(true);
+  const handleCreate = () => {
+    if (!canCreate) return;
 
-    await onCreate({
-      id: `RSV-${Math.floor(1000 + Math.random() * 9000)}`,
+    const nowISO = new Date().toISOString();
+
+    const reservation: Reservation = {
+      id: generateReservationId(existingCount),
       customerName: customerName.trim(),
-      phone: phone || undefined,
+      phone: phone.trim() || undefined,
       guests,
-      dateISO,
-      time,
-      table: table || undefined,
-      notes: notes || undefined,
+      dateISO, // "2026-01-15"
+      time, // "07:30 PM"
+      table: table.trim() || undefined,
+      notes: notes.trim() || undefined,
       status,
-      createdAtISO: new Date().toISOString(),
-    });
+      createdAtISO: nowISO,
+    };
 
-    setSaving(false);
+    onCreate(reservation);
     onClose();
-  }
+
+    // reset
+    setCustomerName("");
+    setPhone("");
+    setGuests(2);
+    setDateISO("");
+    setTime("");
+    setTable("");
+    setNotes("");
+    setStatus("PENDING");
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[95%] sm:w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-rose-200 shadow-xl p-0">
-        <DialogHeader className="p-5 border-b border-rose-200">
-          <DialogTitle className="text-sm font-semibold text-rose-900">
-            Add Reservation
-          </DialogTitle>
-          <p className="text-xs text-rose-600 mt-1">
-            Create a new table booking.
-          </p>
+      <DialogContent className="w-[95%] max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6 no-scrollbar">
+        <DialogHeader>
+          <DialogTitle>Create Reservation</DialogTitle>
         </DialogHeader>
 
-        <div className="p-5 space-y-4">
-          <Field label="Customer Name" required>
-            <Input value={customerName} onChange={setCustomerName} />
-          </Field>
+        <div className="space-y-4">
+          {/* Name */}
+          <div>
+            <label className="text-xs font-bold text-gray-700">Customer Name</label>
+            <input
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="e.g. Ayaan Khan"
+              className="mt-2 w-full h-11 rounded-xl border px-3 text-sm outline-none focus:ring-2 focus:ring-blue-700/30"
+            />
+          </div>
 
-          <Field label="Phone">
-            <Input value={phone} onChange={setPhone} />
-          </Field>
+          {/* Phone */}
+          <div>
+            <label className="text-xs font-bold text-gray-700">Phone (optional)</label>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="e.g. 98765 43210"
+              className="mt-2 w-full h-11 rounded-xl border px-3 text-sm outline-none focus:ring-2 focus:ring-blue-700/30"
+            />
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Guests" required>
-              <Input
+          {/* Guests + Status */}
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-bold text-gray-700">Guests</label>
+              <input
                 type="number"
                 value={guests}
-                onChange={(v) => setGuests(Number(v))}
+                onChange={(e) => setGuests(Math.max(1, Number(e.target.value)))}
+                className="mt-2 w-full h-11 rounded-xl border px-3 text-sm outline-none focus:ring-2 focus:ring-blue-700/30"
               />
-            </Field>
+            </div>
 
-            <Field label="Table">
-              <Input value={table} onChange={setTable} />
-            </Field>
+            <div>
+              <label className="text-xs font-bold text-gray-700">Status</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as ReservationStatus)}
+                className="mt-2 w-full h-11 rounded-xl border px-3 text-sm outline-none focus:ring-2 focus:ring-blue-700/30"
+              >
+                <option value="PENDING">PENDING</option>
+                <option value="CONFIRMED">CONFIRMED</option>
+                <option value="SEATED">SEATED</option>
+                <option value="CANCELLED">CANCELLED</option>
+              </select>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Date" required>
-              <Input type="date" value={dateISO} onChange={setDateISO} />
-            </Field>
+          {/* Date + Time */}
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-bold text-gray-700">Date</label>
+              <input
+                type="date"
+                value={dateISO}
+                onChange={(e) => setDateISO(e.target.value)}
+                className="mt-2 w-full h-11 rounded-xl border px-3 text-sm outline-none focus:ring-2 focus:ring-blue-700/30"
+              />
+            </div>
 
-            <Field label="Time" required>
-              <select
+            <div>
+              <label className="text-xs font-bold text-gray-700">Time</label>
+              <input
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full h-11 rounded-xl border border-rose-200 px-4 text-sm focus:ring-2 focus:ring-rose-400/30"
-              >
-                {["07:00 PM", "07:30 PM", "08:00 PM", "08:30 PM", "09:00 PM"].map(
-                  (t) => (
-                    <option key={t}>{t}</option>
-                  )
-                )}
-              </select>
-            </Field>
+                placeholder="e.g. 07:30 PM"
+                className="mt-2 w-full h-11 rounded-xl border px-3 text-sm outline-none focus:ring-2 focus:ring-blue-700/30"
+              />
+            </div>
           </div>
 
-          <Field label="Status">
-            <select
-              value={status}
-              onChange={(e) =>
-                setStatus(e.target.value as ReservationStatus)
-              }
-              className="w-full h-11 rounded-xl border border-rose-200 px-4 text-sm focus:ring-2 focus:ring-rose-400/30"
-            >
-              <option value="PENDING">Pending</option>
-              <option value="CONFIRMED">Confirmed</option>
-              <option value="SEATED">Seated</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
-          </Field>
+          {/* Table */}
+          <div>
+            <label className="text-xs font-bold text-gray-700">Table (optional)</label>
+            <input
+              value={table}
+              onChange={(e) => setTable(e.target.value)}
+              placeholder="e.g. T-4"
+              className="mt-2 w-full h-11 rounded-xl border px-3 text-sm outline-none focus:ring-2 focus:ring-blue-700/30"
+            />
+          </div>
 
-          <Field label="Notes">
+          {/* Notes */}
+          <div>
+            <label className="text-xs font-bold text-gray-700">Notes (optional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-2xl border border-rose-200 px-4 py-3 text-sm focus:ring-2 focus:ring-rose-400/30"
+              placeholder="e.g. Birthday celebration"
+              className="mt-2 w-full min-h-24 rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-700/30"
             />
-          </Field>
-        </div>
+          </div>
 
-        <div className="p-5 border-t border-rose-200 flex flex-col sm:flex-row gap-3 sm:justify-between">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button
-            className="bg-[#FB7185] hover:bg-[#F43F5E]"
-            disabled={!canSubmit || saving}
-            onClick={handleSubmit}
-          >
-            {saving ? "Creating..." : "Create"}
-          </Button>
+          {/* Actions */}
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button disabled={!canCreate} onClick={handleCreate}>
+              Create
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function Input({
-  value,
-  onChange,
-  type = "text",
-}: {
-  value: string | number;
-  onChange: (v: any) => void;
-  type?: string;
-}) {
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full h-11 rounded-xl border border-rose-200 px-4 text-sm focus:ring-2 focus:ring-rose-400/30"
-    />
-  );
-}
-
-function Field({
-  label,
-  children,
-  required,
-}: {
-  label: string;
-  children: React.ReactNode;
-  required?: boolean;
-}) {
-  return (
-    <div className="space-y-2">
-      <p className="text-xs font-semibold text-rose-600 uppercase">
-        {label} {required && "*"}
-      </p>
-      {children}
-    </div>
   );
 }

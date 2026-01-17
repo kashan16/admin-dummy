@@ -1,100 +1,166 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
-import { Reservation } from "@/types";
+import type { Reservation, ReservationStatus } from "@/types";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMemo, useState } from "react";
 
-type Props = {
-  reservation: Reservation;
-  onClose: () => void;
-  onConfirm: (id: string) => Promise<void>;
-  onSeat: (id: string) => Promise<void>;
-  onCancel: (id: string) => Promise<void>;
+const STATUS_CONFIG: Record<
+  ReservationStatus,
+  { label: string; badge: string; next: ReservationStatus[] }
+> = {
+  PENDING: {
+    label: "Pending",
+    badge: "bg-slate-200 text-slate-800",
+    next: ["CONFIRMED", "CANCELLED"],
+  },
+  CONFIRMED: {
+    label: "Confirmed",
+    badge: "bg-emerald-200 text-emerald-800",
+    next: ["SEATED", "CANCELLED"],
+  },
+  SEATED: {
+    label: "Seated",
+    badge: "bg-blue-200 text-blue-800",
+    next: [],
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    badge: "bg-rose-200 text-rose-800",
+    next: [],
+  },
 };
 
-function pill(status: Reservation["status"]) {
-  switch (status) {
-    case "PENDING":
-      return "bg-yellow-100 text-yellow-800";
-    case "CONFIRMED":
-      return "bg-rose-100 text-rose-800";
-    case "SEATED":
-      return "bg-green-100 text-green-800";
-    case "CANCELLED":
-      return "bg-red-100 text-red-800";
-  }
+function formatDate(dateISO: string) {
+  return new Date(`${dateISO}T00:00:00`).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  });
 }
 
-export default function ReservationModal({
+export function ReservationModal({
   reservation,
   onClose,
-  onConfirm,
-  onSeat,
-  onCancel,
-}: Props) {
+  onStatusChange,
+}: {
+  reservation: Reservation;
+  onClose: () => void;
+  onStatusChange?: (reservationId: string, newStatus: ReservationStatus) => void;
+}) {
+  const [currentStatus, setCurrentStatus] = useState<ReservationStatus>(
+    reservation.status
+  );
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
+
+  const statusConfig = STATUS_CONFIG[currentStatus];
+
+  const dateText = useMemo(
+    () => formatDate(reservation.dateISO),
+    [reservation.dateISO]
+  );
+
+  const handleStatusChange = async (newStatus: ReservationStatus) => {
+    setStatusLoading(true);
+    setCurrentStatus(newStatus);
+    onStatusChange?.(reservation.id, newStatus);
+    setStatusMenuOpen(false);
+    setStatusLoading(false);
+  };
+
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="w-[95%] sm:w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-rose-200">
+      <DialogContent className="w-[95%] max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6 no-scrollbar">
         <DialogHeader>
-          <DialogTitle className="text-sm font-semibold text-rose-900">
-            Reservation Details
-          </DialogTitle>
+          <DialogTitle>Reservation Details</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          <span
-            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${pill(
-              reservation.status
-            )}`}
-          >
-            {reservation.status}
-          </span>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Info label="Customer" value={reservation.customerName} />
-            <Info label="Guests" value={String(reservation.guests)} />
-            <Info label="Date" value={reservation.dateISO} />
-            <Info label="Time" value={reservation.time} />
-            <Info label="Table" value={reservation.table ?? "—"} />
+          {/* STATUS BADGE */}
+          <div className="flex justify-center">
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${statusConfig.badge}`}
+            >
+              {statusConfig.label}
+            </span>
           </div>
-        </div>
 
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-3 pt-4">
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
-
-          <div className="flex flex-wrap gap-2">
-            {reservation.status === "PENDING" && (
-              <Button
-                className="bg-[#FB7185] hover:bg-[#F43F5E]"
-                onClick={() => onConfirm(reservation.id)}
-              >
-                Confirm
-              </Button>
-            )}
-            {reservation.status === "CONFIRMED" && (
-              <Button
-                className="bg-[#FB7185] hover:bg-[#F43F5E]"
-                onClick={() => onSeat(reservation.id)}
-              >
-                Seat
-              </Button>
-            )}
-            {reservation.status !== "CANCELLED" &&
-              reservation.status !== "SEATED" && (
-                <Button
-                  variant="outline"
-                  onClick={() => onCancel(reservation.id)}
-                >
-                  Cancel
-                </Button>
+          {/* Main Info */}
+          <div className="flex justify-between items-start gap-3">
+            <div className="min-w-0">
+              <p className="font-semibold truncate">{reservation.customerName}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {dateText} • {reservation.time}
+              </p>
+              {reservation.phone && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Phone: <span className="font-semibold">{reservation.phone}</span>
+                </p>
               )}
+            </div>
+
+            <Badge className="shrink-0">
+              {reservation.guests} Guests
+            </Badge>
+          </div>
+
+          {/* Table + Notes */}
+          <div className="rounded-2xl border bg-gray-50 p-4 space-y-2">
+            <Row label="Table" value={reservation.table ?? "—"} />
+            <Row label="Guests" value={`${reservation.guests}`} />
+            <Row label="Status" value={currentStatus} bold />
+            {reservation.notes && (
+              <div className="pt-2 border-t">
+                <p className="text-xs font-bold text-gray-700 mb-1">Notes</p>
+                <p className="text-sm text-gray-800">{reservation.notes}</p>
+              </div>
+            )}
+          </div>
+
+          {/* STATUS CHANGE SECTION */}
+          <div className="border-t pt-4 flex justify-center relative">
+            <AnimatePresence>
+              {statusMenuOpen && statusConfig.next.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute bottom-full mb-3 w-[85%] rounded-2xl border bg-background shadow-lg overflow-hidden"
+                >
+                  {statusConfig.next.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => handleStatusChange(s)}
+                      className="w-full px-4 py-2 text-left hover:bg-muted capitalize text-sm"
+                    >
+                      {STATUS_CONFIG[s].label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <Button
+              variant="outline"
+              className="w-[85%]"
+              disabled={statusLoading || statusConfig.next.length === 0}
+              onClick={() => setStatusMenuOpen((p) => !p)}
+            >
+              {statusLoading
+                ? "Updating…"
+                : statusConfig.next.length === 0
+                ? statusConfig.label
+                : "Change Status"}
+            </Button>
           </div>
         </div>
       </DialogContent>
@@ -102,11 +168,19 @@ export default function ReservationModal({
   );
 }
 
-function Info({ label, value }: { label: string; value: string }) {
+function Row({
+  label,
+  value,
+  bold,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+}) {
   return (
-    <div className="rounded-2xl bg-rose-50 border border-rose-200 p-4">
-      <p className="text-xs font-semibold text-rose-600 uppercase">{label}</p>
-      <p className="text-sm font-semibold text-rose-900">{value}</p>
+    <div className={`flex justify-between text-sm ${bold ? "font-bold" : ""}`}>
+      <span className="text-gray-600">{label}</span>
+      <span className="text-gray-900">{value}</span>
     </div>
   );
 }
