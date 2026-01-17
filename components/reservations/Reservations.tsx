@@ -104,7 +104,7 @@ export default function Reservations() {
   const activeFilterCount = [status !== "all", dateFilter !== "all"].filter(Boolean).length;
 
   return (
-    <div className="space-y-4 w-full min-w-0 px-3 sm:px-6 lg:px-10 xl:px-14 mx-auto overflow-x-hidden">
+    <div className="space-y-4 w-full min-w-0 px-3 sm:px-6 lg:px-10 xl:px-14 mx-auto overflow-x-hidden pt-2">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         {/* Left */}
